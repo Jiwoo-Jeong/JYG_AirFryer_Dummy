@@ -62,9 +62,9 @@ def clear_log():
 @app.route('/log', methods=['POST','GET'])
 def get_log():
     global log
-    log.append((time.asctime()+request.data.decode()))
+    log.append((time.asctime()+" :"+request.data.decode()))
     if len(log) > 20:
-        log.pop()
+        log.pop(0)
     r = make_response("ok",200)
     r.mimetype = "text/plain"
     return r
