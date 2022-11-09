@@ -14,12 +14,19 @@ log = []
 global receipe_request
 receipe_request = []
 
-receipe_example = { 'PDN':'초신선 무항생제 삼겹살 A','CG1':'기름받이에 물','CG2':'','NUC':'3',
-                    'C01':'180_18_1_3',
-                    'C02':'180_2_1_2',
-                    'C03':'200_2_1_3'}
+receipe_example = {
+    'Pname' : "삼겹살",
+    'GuideIcon' : 3,
+    'GuideText01' : "기름받이에 물 넣어주세요",
+    'GuideText02' : "",
+    'Ncource' : 2,
+    'cource01Name' : '촉촉',
+    'cource01' : "180_18_1_3|180_2_1_2|",
+    'cource02Name' : '바싹',
+    'cource02' : "180_18_1_3|180_2_1_2|200_2_1_3|"
+}
 
-
+# Azure Flask 소스코드 포함부분, 접속확인위해서 남겨놓음
 @app.route('/')
 def index():
    print('Request for index page rSeceived')
@@ -42,34 +49,7 @@ def hello():
        return redirect(url_for('index'))
 
 
-@app.route('/ping', methods=['POST','GET'])
-def pong():
-    r = make_response("alive",200)
-    r.mimetype = "text/plain"
-    return r
-
-@app.route('/clear_log', methods=['POST','GET'])
-def clear_log():
-    global log
-    log = ["["+time.asctime()+"] log cleared!"]
-    rt = ""
-    for l in log:
-        rt += l +"\n"
-    r = make_response(rt,200)
-    r.mimetype = "text/plain"
-    return r
-
-@app.route('/log', methods=['POST','GET'])
-def get_log():
-    global log
-    log.append((time.asctime()+" :"+request.data.decode()))
-    if len(log) > 20:
-        log.pop(0)
-    r = make_response("ok",200)
-    r.mimetype = "text/plain"
-    return r
-
-@app.route('/view_log', methods=['POST','GET'])
+@app.route('/view_log', methods=['POST'])
 def view_log():
     global log
     rt = ""
@@ -79,13 +59,59 @@ def view_log():
     r.mimetype = "text/plain"
     return r
 
+
+# 실제 서버 더미 코드 
+# 로그 수신
+"""
+{
+  "Serial": "1280936210",
+  "TimeStamp": "1667973287",
+  "Pcode": "asd31213wsnw",
+}
+"""
+@app.route('/log', methods=['POST','GET'])
+def add_log():
+    update_log("/log : "+request.data.decode())
+    r = make_response("ok",200)
+    r.mimetype = "text/plain"
+    return r
+
+
+# qr 입력 수신
+"""
+{
+  "Serial": "1280936210",
+  "TimeStamp": "1667973287",
+  "Pcode": "asd31213wsnw",
+}
+"""
 @app.route('/qr', methods=['POST','GET'])
 def qr():
-    global receipe_request
-    receipe_request.append(request.data)
-    if len(receipe_request) > 20:
-        receipe_request.pop()
+    update_log("/qr : "+request.data.decode())
     return receipe_example
+
+
+
+# 계정 연동
+"""
+{
+  "Serial": "1280936210",
+  "TimeStamp": "1667973287",
+  "action": "login",                    // "action": "logout"
+  "user_id": "jwjeong"
+}
+"""
+
+@app.route('/account', methods=['POST','GET'])
+def account():
+    update_log("/account : "+request.data.decode())
+    return receipe_example
+
+def update_log(text):
+    global log
+    log.append(("["+time.asctime()+"]    "+text))
+    if len(log) > 40:
+        log.pop(0)
 
 if __name__ == '__main__':
     app.run(app = app,ssl_context=ssl_context)
