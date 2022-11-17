@@ -15,15 +15,13 @@ global receipe_request
 receipe_request = []
 
 receipe_example = {
-    'Pname' : "삼겹살",
-    'GuideIcon' : 3,
-    'GuideText01' : "기름받이에 물 넣어주세요",
-    'GuideText02' : "",
-    'Ncource' : 2,
-    'cource01Name' : '촉촉',
-    'cource01' : "180_18_1_3|180_2_1_2|",
-    'cource02Name' : '바싹',
-    'cource02' : "180_18_1_3|180_2_1_2|200_2_1_3|"
+    'p_name' : "삼겹살",
+    'guide_tcon' : 3,
+    'guide_text_01' : "기름받이에 물 넣어주세요",
+    'guide_text_02' : "",
+    'cource_n' : 2,
+    'cource_name' : ['바싹','촉촉'],
+    'cource_value' : [[[180,18,1,3],[180,2,1,2],[200,2,1,3]],[[180,18,1,3],[180,2,1,2]]]
 }
 
 # Azure Flask 소스코드 포함부분, 접속확인위해서 남겨놓음
@@ -72,9 +70,7 @@ def view_log():
 @app.route('/log', methods=['POST','GET'])
 def add_log():
     update_log("/log : "+request.data.decode())
-    r = make_response("ok",200)
-    r.mimetype = "text/plain"
-    return r
+    return {'result':'ok'}
 
 
 # qr 입력 수신
@@ -105,7 +101,7 @@ def qr():
 @app.route('/account', methods=['POST','GET'])
 def account():
     update_log("/account : "+request.data.decode())
-    return receipe_example
+    return {'result':'ok'}
 
 def update_log(text):
     global log
