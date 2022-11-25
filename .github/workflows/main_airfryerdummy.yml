@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'AirFryerDummy'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8181452D57F146DBBDBEE7C4510D2759 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_93D8959DA0874E5B93E1FAAF56D25DD4 }}
